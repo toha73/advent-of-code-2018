@@ -59,14 +59,14 @@ namespace Advent_of_Code_2018
                 .Select(x => new Data { Value = x, Characters = x.ToList(), Numbers = x.Select(c => (int)c).ToList() })
                 .ToList();
         }
-    }
 
-    public class Data
-    {
-        public string Value { get; set; }
-        public List<char> Characters { get; set; }
-        public List<int> Numbers { get; set; }
-        public override string ToString() => Value;
+        public class Data
+        {
+            public string Value { get; set; }
+            public List<char> Characters { get; set; }
+            public List<int> Numbers { get; set; }
+            public override string ToString() => Value;
 
+        }
     }
 }
