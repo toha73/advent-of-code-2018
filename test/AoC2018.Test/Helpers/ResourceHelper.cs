@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Advent_of_Code_2018.Test.Helpers
 {
     public static class ResourceHelper
     {
+        public static string GetInputStringAocDay(Type type) => GetInputString($"{type.Name}.txt");
+
         public static string GetInputString(string inputFileName)
         {
             var assembly = typeof(Day1).Assembly;
