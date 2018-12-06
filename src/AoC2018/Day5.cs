@@ -41,37 +41,58 @@ namespace Advent_of_Code_2018
             {
                 if (polymer.CurrentIsAttractedToNext())
                 {
-                    polymer.Units.RemoveRange(polymer.Position, 2);
-                    if (polymer.Position > 0)
-                    {
-                        polymer.Position--;
-                    }
+                    polymer.RemoveCurrent(2);
+                    polymer.Back();
                 }
                 else
                 {
-                    polymer.Position++;
+                    polymer.Forward();
                 }
             }
         }
 
         private Polymer ParseInput(string input)
         {
-            return new Polymer
-            {
-                Units = input.Select(c => new Unit { Char = c }).ToList()
-            };
+            return new Polymer(input.Select(c => new Unit { Char = c }));
         }
 
         public class Polymer
         {
-            public int Position { get; set; }
-            public List<Unit> Units { get; set; }
-            public bool IsEof => Position >= Units.Count;
-            public Unit this[int index] => index < Units.Count ? Units[index] : null;
-            public Unit CurrentUnit => this[Position];
-            public Unit NextUnit => this[Position + 1];
+            private LinkedListNode<Unit> _currentNode;
+
+            public Polymer(IEnumerable<Unit> units)
+            {
+                Units = new LinkedList<Unit>(units);
+                _currentNode = Units.First;
+            }
+            public LinkedList<Unit> Units { get; }
+            public bool IsEof => _currentNode == null;
+            public Unit CurrentUnit => _currentNode.Value;
+            public Unit NextUnit => _currentNode.Next?.Value;
+            public void Forward() => _currentNode = _currentNode.Next;
+            public void Back() => _currentNode = _currentNode.Previous ?? _currentNode;
             public bool CurrentIsAttractedToNext() => NextUnit != null ? CurrentUnit.IsAttractedTo(NextUnit) : false;
-            public void RemoveAllUnitsOfType(char c) => Units = Units.Where(u => u.Type != c).ToList();
+            public void RemoveCurrent(int repeat = 1)
+            {
+                var node = _currentNode;
+                foreach (var i in Enumerable.Range(0, repeat))
+                {
+                    var nextNode = node.Next ?? node.Previous;
+                    Units.Remove(node);
+                    node = nextNode;
+                }
+                _currentNode = node;
+            }
+            public void RemoveAllUnitsOfType(char c)
+            {
+                foreach (var node in Units.Nodes())
+                {
+                    if (node.Value.Type == c)
+                    {
+                        Units.Remove(node);
+                    }
+                }
+            }
         }
 
         public class Unit
@@ -81,6 +102,20 @@ namespace Advent_of_Code_2018
             public char Type => char.ToLowerInvariant(Char);
             public bool IsAttractedTo(Unit u) => u.Type == Type && u.Polarity != Polarity;
             public override string ToString() => Char.ToString();
+        }
+    }
+
+    public static class LinkedListExtensions
+    {
+        public static IEnumerable<LinkedListNode<T>> Nodes<T>(this LinkedList<T> list)
+        {
+            var node = list.First;
+            while (node != null)
+            {
+                var nextNode = node.Next;
+                yield return node;
+                node = nextNode;
+            }
         }
     }
 }
