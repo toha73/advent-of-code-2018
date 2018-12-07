@@ -27,6 +27,19 @@ namespace Advent_of_Code_2018.Test
             Assert.That(_sut.Part1(_input), Is.EqualTo(2342));
         }
 
+        [Test]
+        public void Part2_simple_test()
+        {
+            Assert.That(_sut.Part2(_simpleTestInput, 32), Is.EqualTo(16));
+        }
+
+
+        [Test]
+        public void Part2_real_test()
+        {
+            Assert.That(_sut.Part2(_input, 10000), Is.EqualTo(43302));
+        }
+
         const string _simpleTestInput = @"
 1, 1
 1, 6

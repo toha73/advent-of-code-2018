@@ -22,7 +22,15 @@ namespace Advent_of_Code_2018
                 .ToList();
 
             return groupedLocations.First().Count();
+        }
 
+        public int Part2(string input, int maxTotalDistance)
+        {
+            var grid = ParseInput(input);
+
+            FillGridLocations(grid);
+
+            return grid.TotalDistances.Where(k => k.Value < maxTotalDistance).Count();
         }
 
         private Grid ParseInput(string input)
@@ -38,9 +46,17 @@ namespace Advent_of_Code_2018
         {
             foreach (var location in grid.AllLocations())
             {
+                var distances = grid.Coordinates
+                    .Select(c => new { Coordinate = c, Distance = c.GetDistanceTo(location) })
+                    .OrderBy(x => x.Distance)
+                    .ToList();
+                grid.TotalDistances[location] = distances.Sum(d => d.Distance);
+
                 if (!grid.Locations.ContainsKey(location))
                 {
-                    var closest = grid.GetClosestCoordinateTo(location);
+                    var closest = distances[0].Distance == distances[1].Distance
+                        ? null
+                        : distances[0].Coordinate;
                     grid.Locations[location] = closest;
                 }
             }
@@ -77,19 +93,11 @@ namespace Advent_of_Code_2018
             public List<int> XLocations { get; }
             public List<int> YLocations { get; }
             public List<Coordinate> Coordinates { get; }
+            public Dictionary<(int x, int y), int> TotalDistances { get; } = new Dictionary<(int x, int y), int>();
             public Dictionary<(int x, int y), Coordinate> Locations { get; } = new Dictionary<(int x, int y), Coordinate>();
             public Coordinate Get((int x, int y) location) => Locations.TryGetValue(location, out var coordinate) ? coordinate : default;
-            public Coordinate GetClosestCoordinateTo((int x, int y) location)
-            {
-                var closest = Coordinates
-                    .Select(c => new { Coordinate = c, Distance = c.GetDistanceTo(location) })
-                    .OrderBy(x => x.Distance)
-                    .Take(2)
-                    .ToList();
-                return closest[0].Distance == closest[1].Distance ? null : closest[0].Coordinate;
-            }
             public IEnumerable<(int x, int y)> AllLocations() => YLocations.SelectMany(y => XLocations.Select(x => (x, y)));
-            public IEnumerable<(int x, int y)> BoundaryLocations() => 
+            public IEnumerable<(int x, int y)> BoundaryLocations() =>
                 XLocations
                     .Select(x => (x, MinY))
                     .Concat(XLocations.Select(x => (x, MaxY)))
