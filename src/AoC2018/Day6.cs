@@ -10,45 +10,45 @@ namespace Advent_of_Code_2018
         {
             var grid = ParseInput(input);
 
-            FillGridPositions(grid);
+            FillGridLocations(grid);
 
             var infiniteCoords = GetBoundaryCoordinates(grid);
 
-            var groupedPositions = grid.Positions
+            var groupedLocations = grid.Locations
                 .Where(p => p.Value != null)
                 .GroupBy(p => p.Value)
                 .OrderByDescending(g => g.Count())
                 .Where(g => !infiniteCoords.Contains(g.Key))
                 .ToList();
 
-            return groupedPositions.First().Count();
+            return groupedLocations.First().Count();
 
         }
 
         private Grid ParseInput(string input)
         {
-            var positions = input.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+            var locations = input.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(l => l.Split(','))
                 .Select(x => (int.Parse(x[0]), int.Parse(x[1])))
                 .ToList();
-            return new Grid(positions);
+            return new Grid(locations);
         }
 
-        private static void FillGridPositions(Grid grid)
+        private static void FillGridLocations(Grid grid)
         {
-            foreach (var position in grid.AllPositions())
+            foreach (var location in grid.AllLocations())
             {
-                if (!grid.Positions.ContainsKey(position))
+                if (!grid.Locations.ContainsKey(location))
                 {
-                    var closest = grid.GetClosestCoordinateTo(position);
-                    grid.Positions[position] = closest;
+                    var closest = grid.GetClosestCoordinateTo(location);
+                    grid.Locations[location] = closest;
                 }
             }
         }
 
         private static List<Coordinate> GetBoundaryCoordinates(Grid grid)
         {
-            return grid.BoundaryPositions()
+            return grid.BoundaryLocations()
                 .Select(p => grid.Get(p))
                 .Distinct()
                 .ToList();
@@ -61,55 +61,55 @@ namespace Advent_of_Code_2018
                 Coordinates = coordinates
                     .Select((c, i) => new Coordinate(i, c))
                     .ToList();
-                Coordinates.ForEach(c => Positions[c.Position] = c);
-                MinX = Coordinates.Min(p => p.Position.X);
-                MaxX = Coordinates.Max(p => p.Position.X);
-                MinY = Coordinates.Min(p => p.Position.Y);
-                MaxY = Coordinates.Max(p => p.Position.Y);
-                XPositions = Enumerable.Range(MinX, MaxX - MinX + 1).ToList();
-                YPositions = Enumerable.Range(MinY, MaxY - MinY + 1).ToList();
+                Coordinates.ForEach(c => Locations[c.Location] = c);
+                MinX = Coordinates.Min(p => p.Location.X);
+                MaxX = Coordinates.Max(p => p.Location.X);
+                MinY = Coordinates.Min(p => p.Location.Y);
+                MaxY = Coordinates.Max(p => p.Location.Y);
+                XLocations = Enumerable.Range(MinX, MaxX - MinX + 1).ToList();
+                YLocations = Enumerable.Range(MinY, MaxY - MinY + 1).ToList();
             }
 
             public int MinX { get; }
             public int MaxX { get; }
             public int MinY { get; }
             public int MaxY { get; }
-            public List<int> XPositions { get; }
-            public List<int> YPositions { get; }
+            public List<int> XLocations { get; }
+            public List<int> YLocations { get; }
             public List<Coordinate> Coordinates { get; }
-            public Dictionary<(int x, int y), Coordinate> Positions { get; } = new Dictionary<(int x, int y), Coordinate>();
-            public Coordinate Get((int x, int y) position) => Positions.TryGetValue(position, out var coordinate) ? coordinate : default;
-            public Coordinate GetClosestCoordinateTo((int x, int y) position)
+            public Dictionary<(int x, int y), Coordinate> Locations { get; } = new Dictionary<(int x, int y), Coordinate>();
+            public Coordinate Get((int x, int y) location) => Locations.TryGetValue(location, out var coordinate) ? coordinate : default;
+            public Coordinate GetClosestCoordinateTo((int x, int y) location)
             {
                 var closest = Coordinates
-                    .Select(c => new { Coordinate = c, Distance = c.GetDistanceTo(position) })
+                    .Select(c => new { Coordinate = c, Distance = c.GetDistanceTo(location) })
                     .OrderBy(x => x.Distance)
                     .Take(2)
                     .ToList();
                 return closest[0].Distance == closest[1].Distance ? null : closest[0].Coordinate;
             }
-            public IEnumerable<(int x, int y)> AllPositions() => YPositions.SelectMany(y => XPositions.Select(x => (x, y)));
-            public IEnumerable<(int x, int y)> BoundaryPositions() => 
-                XPositions
+            public IEnumerable<(int x, int y)> AllLocations() => YLocations.SelectMany(y => XLocations.Select(x => (x, y)));
+            public IEnumerable<(int x, int y)> BoundaryLocations() => 
+                XLocations
                     .Select(x => (x, MinY))
-                    .Concat(XPositions.Select(x => (x, MaxY)))
-                    .Concat(YPositions.Select(y => (MinX, y + 1)))
-                    .Concat(YPositions.Select(y => (MaxX, y - 1)))
+                    .Concat(XLocations.Select(x => (x, MaxY)))
+                    .Concat(YLocations.Select(y => (MinX, y + 1)))
+                    .Concat(YLocations.Select(y => (MaxX, y - 1)))
                     .ToList();
         }
 
         public class Coordinate : IEquatable<Coordinate>
         {
-            public Coordinate(int id, (int x, int y) position)
+            public Coordinate(int id, (int x, int y) location)
             {
                 Id = id;
-                Position = position;
+                Location = location;
             }
             public int Id { get; }
-            public (int X, int Y) Position { get; }
-            public int GetDistanceTo((int x, int y) p) => Math.Abs(Position.X - p.x) + Math.Abs(Position.Y - p.y);
-            public override int GetHashCode() => (Id, Position).GetHashCode();
-            public override string ToString() => $"{Id}:{Position}";
+            public (int X, int Y) Location { get; }
+            public int GetDistanceTo((int x, int y) p) => Math.Abs(Location.X - p.x) + Math.Abs(Location.Y - p.y);
+            public override int GetHashCode() => (Id, Location).GetHashCode();
+            public override string ToString() => $"{Id}:{Location}";
             public bool Equals(Coordinate other) => other.GetHashCode() == GetHashCode();
         }
     }
