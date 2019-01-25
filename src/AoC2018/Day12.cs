@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2018.Extensions;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,7 +72,7 @@ namespace Advent_of_Code_2018
                         var part = Potteries.CopySlice(i, 5);
                         foreach (var pattern in SpreadPatterns)
                         {
-                            if (part.IsEqualTo(pattern.Pots))
+                            if (part.AreFirstFiveBitsEqual(pattern.Pots))
                             {
                                 newGeneration[i + 2] = pattern.Outcome;
                             }
@@ -93,6 +94,9 @@ namespace Advent_of_Code_2018
 
                 return GetSum();
             }
+
+
+
             public override string ToString() => new string(Potteries.Cast<bool>().Select(b => b ? '#' : '.').ToArray());
         }
 
@@ -107,27 +111,6 @@ namespace Advent_of_Code_2018
             public string Pattern { get; set; }
             public BitArray Pots { get; }
             public bool Outcome { get; }
-        }
-    }
-
-    public static class BitArrayExtensions
-    {
-        public static BitArray CopySlice(this BitArray source, int offset, int length)
-        {
-            var ret = new BitArray(length);
-            for (int i = 0; i < length; i++)
-            {
-                ret[i] = source[offset + i];
-            }
-            return ret;
-        }
-        public static bool IsEqualTo(this BitArray source, BitArray target)
-        {
-            return source[0] == target[0]
-                && source[1] == target[1]
-                && source[2] == target[2]
-                && source[3] == target[3]
-                && source[4] == target[4];
         }
     }
 }

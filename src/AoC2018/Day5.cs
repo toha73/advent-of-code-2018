@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Advent_of_Code_2018.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -102,20 +103,6 @@ namespace Advent_of_Code_2018
             public char Type => char.ToLowerInvariant(Char);
             public bool IsAttractedTo(Unit u) => u.Type == Type && u.Polarity != Polarity;
             public override string ToString() => Char.ToString();
-        }
-    }
-
-    public static class LinkedListExtensions
-    {
-        public static IEnumerable<LinkedListNode<T>> Nodes<T>(this LinkedList<T> list)
-        {
-            var node = list.First;
-            while (node != null)
-            {
-                var nextNode = node.Next;
-                yield return node;
-                node = nextNode;
-            }
         }
     }
 }
