@@ -3,13 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Advent_of_Code_2018</RootNamespace>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Input\Day1.txt" />
     <None Remove="Input\Day10.txt" />
     <None Remove="Input\Day12.txt" />
+    <None Remove="Input\Day13.txt" />
     <None Remove="Input\Day2.txt" />
     <None Remove="Input\Day3.txt" />
     <None Remove="Input\Day4.txt" />
@@ -20,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Input\Day13.txt" />
     <EmbeddedResource Include="Input\Day12.txt" />
     <EmbeddedResource Include="Input\Day6.txt" />
   </ItemGroup>
